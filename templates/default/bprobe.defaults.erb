@@ -1,14 +1,24 @@
-PIDFILE=/var/run/bprobe.pid
-TLS_KEY=<%= @node[:boundary][:bprobe][:etc][:path] %>/key.pem
-TLS_CA=<%= @node[:boundary][:bprobe][:etc][:path] %>/ca.pem
-TLS_CERT=<%= @node[:boundary][:bprobe][:etc][:path] %>/cert.pem
-<%- if node[:boundary][:bprobe][:interfaces] %>
-# http://support.boundary.com/customer/portal/articles/891583-manually-specify-interfaces-for-bprobe
-INTERFACES="<%= @node[:boundary][:bprobe][:interfaces].join(' ') %>"
-<%- end -%>
+COLLECTOR=<%= @collector_uri %>
 
-## WARNING: Do not modify the values below unless
-## you know what you are doing!
-COLLECTOR=tls://<%= @node[:boundary][:bprobe][:collector][:hostname] %>:<%= @node[:boundary][:bprobe][:collector][:port] %>
-FLOW_MAP_SIZE=1048576
-FLOW_PAUSE=0
+# All non-loopback interfaces that have IP addresses and are up are monitored by default.
+# If you only want specific interfaces monitored, specify them here.
+# e.g. INTERFACES="eth0 eth1 eth3 eth4"
+INTERFACES="<%= @interfaces.join(' ') %>"
+
+# Enable periodic stats on pcap interfaces by setting this to 1
+PCAP_STATS=<%= @pcap_stats %>
+
+# Enable promiscuous capture mode (required to see some traffic, e.g. rx multicast)
+PCAP_PROMISC=<%= @pcap_promisc %>
+
+# Disable built-in NTP support for meter time synchronization by setting this to 1
+DISABLE_NTP=<%= @disable_ntp %>
+
+# Enable built-in STUN support for public IP detection by setting this to 1
+ENABLE_STUN=<%= @enable_stun %>
+
+# Enable secondary configurations for the meter by specifying a space-separated
+# list of configuration that exists under etc/bprobe_*. For example:
+# ALT_CONFIGS="test" starts a secondary meter with the configuration
+# found under /etc/bprobe_test
+ALT_CONFIGS="<%= @alt_configs.join(' ') %>"

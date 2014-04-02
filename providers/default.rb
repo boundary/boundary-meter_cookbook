@@ -1,9 +1,11 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: bprobe
 # Provider:: default
 #
 # Copyright 2011, Boundary
+# Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,16 +23,11 @@
 include Boundary::API
 
 action :create do
-  if node[:boundary][:bprobe][:id]
-    Chef::Log.debug("Boundary meter already exists, not creating.")
+  if meter_exists?(new_resource)
+    Chef::Log.debug('Boundary meter already exists, not creating.')
   else
-    create_meter_request(new_resource)
-    save_meter_id_attribute(new_resource)
+    create_meter(new_resource)
   end
-
-  apply_cloud_tags(new_resource)
-  apply_meter_tags(new_resource)
-  node.roles.each { |role| apply_an_tag(new_resource, role) }
 
   new_resource.updated_by_last_action(true)
 end
@@ -38,10 +35,23 @@ end
 action :delete do
   if meter_exists?(new_resource)
     delete_meter_request(new_resource)
-    delete_meter_id_attribute
   else
     Chef::Log.debug("Boundary meter doesn't exist, not deleting.")
   end
 
   new_resource.updated_by_last_action(true)
+end
+
+private
+
+def create_meter(resource)
+  create_meter_request(resource)
+
+  apply_cloud_tags(resource)
+  apply_meter_tags(resource)
+  node.roles.each do |role|
+    apply_an_tag(resource, role)
+  end
+
+  apply_an_tag(resource, node.chef_environment)
 end

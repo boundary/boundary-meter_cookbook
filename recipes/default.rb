@@ -1,10 +1,12 @@
 #
 # Author:: Ben Black (<b@boundary.com>)
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: bprobe
 # Recipe:: default
 #
 # Copyright 2010, Boundary
+# Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,56 +21,81 @@
 # limitations under the License.
 #
 
-include_recipe "bprobe::dependencies"
+include_recipe 'bprobe::dependencies'
 
-# create the meter in the boundary api
-bprobe node[:boundary][:hostname] do
-  action :create
+package 'bprobe'
+
+meter_name = node['bprobe']['hostname']
+
+bprobe meter_name do
+  org_id node['bprobe']['meter']['org_id']
+  api_key node['bprobe']['meter']['api_key']
 end
 
-# setup the config directory
-directory node[:boundary][:bprobe][:etc][:path] do
-  action :create
-  mode 0755
-  owner "root"
-  group "root"
+directory '/etc/bprobe' do
+  owner 'root'
+  group 'root'
+  mode '0755'
   recursive true
 end
 
-# download and install the meter cert and key files
-bprobe_certificates node[:boundary][:hostname] do
-  action :install
+bprobe_certificates meter_name do
+  org_id node['bprobe']['meter']['org_id']
+  api_key node['bprobe']['meter']['api_key']
 end
 
-# install the bprobe package
-package "bprobe" do
-end
+service 'bprobe'
 
-# start the bprobe service
-service "bprobe" do
-  supports value_for_platform(
-    "debian" => { "4.0" => [ :restart ], "default" => [ :restart ] },
-    "ubuntu" => { "default" => [ :restart ] },
-    "default" => { "default" => [:restart ] }
-  )
-  action [ :start, :enable ]
-end
-
-# enforce the ca cert
-cookbook_file "#{node[:boundary][:bprobe][:etc][:path]}/ca.pem" do
-  source "ca.pem"
-  mode 0600
-  owner "root"
-  group "root"
+cookbook_file '/etc/bprobe/ca.pem' do
+  source 'ca.pem'
+  owner 'root'
+  group 'root'
+  mode '0600'
   notifies :restart, resources(:service => 'bprobe')
 end
 
-# enforce the main config file
-template "#{node[:boundary][:bprobe][:etc][:path]}/bprobe.defaults" do
-  source "bprobe.defaults.erb"
-  mode 0644
-  owner "root"
-  group "root"
-  notifies :restart, resources(:service => 'bprobe')
+node['bprobe']['meter']['alt_configs'].each do |config|
+  config_dir = "/etc/bprobe_#{config['name']}"
+
+  bprobe meter_name do
+    org_id config['org_id']
+    api_key config['api_key']
+  end
+
+  directory config_dir do
+    owner 'root'
+    group 'root'
+    mode '0755'
+    recursive true
+  end
+
+  bprobe_certificates meter_name do
+    org_id config['org_id']
+    api_key config['api_key']
+  end
+
+  cookbook_file "#{config_dir}/ca.pem" do
+    source 'ca.pem'
+    owner 'root'
+    group 'root'
+    mode '0600'
+    notifies :restart, resources(:service => 'bprobe')
+  end
 end
 
+template '/etc/default/bprobe' do
+  source 'bprobe.default.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, resources(:service => 'bprobe')
+  variables({
+              :collector_uri => "tls://#{node['bprobe']['collector']['hostname']}:#{node['bprobe']['collector']['port']}",
+              :interfaces => node['bprobe']['meter']['interfaces'],
+              :pcap_stats => node['bprobe']['meter']['pcap_stats'],
+              :pcap_promisc => node['bprobe']['meter']['pcap_promisc'],
+              :disable_ntp => node['bprobe']['meter']['disable_ntp'],
+              :enable_stun => node['bprobe']['meter']['enable_stun'],
+              :alt_configs => node['bprobe']['meter']['alt_configs'].collect {|cfg| cfg['name']}
+            })
+end

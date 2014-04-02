@@ -1,10 +1,10 @@
 ### The bprobe Cookbook
 
-This cookbook has two functions, the first is to install the Boundary bprobe daemon on your machine. The second is to interface with the Boundary API providing bprobe with certificates, adding the meter to your account and adding the meter to a group. The latter is provided by two LWRP's bprobe and bprobe_certificates. Examples of their usage can be found in the default recipe. This recipe can be used as is to install bprobe and configure it using the Boundary API. To get things running adjust the attributes in api.rb to match your Boundary account, upload the cookbooks in this repo and apply bprobe::default to a system.
+This cookbook is used to install and configure (via the Boundary API) the Boundary meter. To get things running, set your Boundary account's org id and API key in the attributes/default.rb and add bprobe::default to your host's run_list.
 
 #### Dependencies
 
-This cookbook depends on the `apt` and `yum` cookbooks from https://github.com/boundary/boundary_cookbooks The Opscode maintained versions of these cookbooks *should* also work.
+Dependencies and their requisite versions, when necessary, are specified in metadata.rb.
 
 #### Configuration Options
 
@@ -13,46 +13,44 @@ This cookbook depends on the `apt` and `yum` cookbooks from https://github.com/b
 Setup your API keys in attributes/api.rb
 
 ```ruby
-default[:boundary][:api][:hostname] = "api.boundary.com"
-default[:boundary][:api][:org_id] = "dlekd93DGJDJw9diekd98"
-default[:boundary][:api][:key] = "PI1ldnfKENFMslekd29dl"
+default['bprobe']['meter']['org_id'] = 'org_id_here'
+default['bprobe']['meter']['api_key'] = 'api_key_here'
 ```
 
-##### Host Tags
+##### Boundary Meter Tags
 
-The easiest way to set host tags is to use override_attributes in your server roles
+By default, the cookbook sends the chef_environment as a meter tag to the Boundary service.
 
-```ruby
-name "db-server"
-description "Installs Boundary bprobe and sets some meter tags"
-recipes "mysql","bprobe::default"
+If your host is in EC2 or you are using Opsworks, it adds a few tags specific to those environments.
 
-override_attributes({
-  :boundary => {
-    :bprobe => {
-      :tags => [ "linux", "ubuntu", "database-server" ]
-    }
-  }
-})
-```ruby
+You can set more tags by manipulating the node['bprobe']['meter']['tags'] attribute.
 
 ##### Interfaces
 
-By default, bprobe listens on all interfaces. However, you can manually specify the interfaces you wish to monitor.
+The meter defaults to monitoring all interfaces. You can change this with the node['bprobe']['meter']['interfaces'] array:
 
 ```ruby
-override_attributes({
-  :boundary       => {
-    :bprobe       => {
-      :interfaces => [ "eth0", "eth2" ]
-    }
-  }
-})
+node['bprobe']['meter']['interfaces'] = [ 'eth0', 'eth2' ]
 ```
 
 ##### Hostname
 
-By default Boundary will use `node[:fqdn]` as the hostname. You can override this by setting a `[:boundary][:hostname]` attribute with a higher precedence then default.
+The Boundary meter defaults to using `node['fqdn']` as the hostname. You can override this by setting `node['bprobe']['meter']['hostname']` with a higher precedence then default.
+
+##### Sending to Multiple Orgs
+
+If you would like to "multiplex" your meter traffic to multiple Boundary orgs, we support this using a special variable in the Boundary meter named `ALT_CONFIGS`.
+
+These can be set via the attribute `node['bprobe']['meter']['alt_configs']` which is an array of hashes:
+
+```ruby
+node['bprobe']['meter']['alt_configs'] = [{
+                                            'name' => 'My Secondary Org',
+                                            'org_id' => 'secondary_org_id',
+                                            'api_key' => 'secondary_api_key'
+                                          }
+                                         ]
+```
 
 #### EC2
 
@@ -61,4 +59,3 @@ This cookbook includes automatic detection and tagging of your meter with variou
 #### OpsWorks
 
 If you are using OpsWorks this cookbook should work out of the box (with the above dependencies). This cookbook also includes automatic detection and tagging of your meter with layers, stack name and applications if any exist.
-

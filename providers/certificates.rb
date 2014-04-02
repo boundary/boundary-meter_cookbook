@@ -1,9 +1,11 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: bprobe
 # Provider:: certificates
 #
 # Copyright 2011, Boundary
+# Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,25 +23,26 @@
 include Boundary::API
 
 action :install do
-  service "bprobe" do
-    action [ :nothing ]
-  end
+  meter_dir = meter_directory(new_resource)
 
-  download_certificate_request(new_resource)
-  download_key_request(new_resource)
+  if meter_dir
+    download_certificate_request(new_resource, meter_dir)
+    download_key_request(new_resource, meter_dir)
+  end
 
   new_resource.updated_by_last_action(true)
 end
 
 action :delete do
-  files = [
-    "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem",
-    "#{node[:boundary][:bprobe][:etc][:path]}/key.pem"
-  ]
+  meter_dir = meter_directory(new_resource)
 
-  files.each do |file|
-    file file do
-      action :delete
+  if meter_dir
+    [ "#{meter_dir}/cert.pem",
+      "#{meter_dir}/key.pem"
+    ].each do |file|
+      file file do
+        action :delete
+      end
     end
   end
 
@@ -48,27 +51,43 @@ end
 
 private
 
-def download_certificate_request(new_resource)
-  if ::File.exist?("#{node[:boundary][:bprobe][:etc][:path]}/cert.pem")
-    Chef::Log.debug("Certificate file already exists, not downloading.")
+def meter_directory(new_resource)
+  dir_prefix = "/etc/bprobe"
+  dir_path = nil
+
+  if node['bprobe']['meter']['org_id'] == new_resource.org_id
+    dir_path = dir_prefix
+  else
+    found = node['bprobe']['meter']['alt_configs'].detect {|meter| meter['org_id'] == new_resource.org_id }
+
+    if found
+      dir_path = "#{dir_prefix}_#{found['name']}"
+    end
+  end
+
+  return dir_path
+end
+
+def download_certificate_request(new_resource, path)
+  if ::File.exist?("#{path}/cert.pem")
+    Chef::Log.debug('Certificate file already exists, not downloading.')
   else
     begin
-      auth = auth_encode()
+      auth = auth_encode(new_resource.api_key)
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-
       cert_response = http_request(:get, "#{base_url}/cert.pem", headers)
 
       if cert_response
-        file "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem" do
-          mode 0600
-          owner "root"
-          group "root"
+        file "#{path}/cert.pem" do
+          owner 'root'
+          group 'root'
+          mode '0600'
           content cert_response.body
           notifies :restart, resources(:service => 'bprobe')
         end
       else
-        Chef::Log.error("Could not download certificate (nil response)!")
+        Chef::Log.error('Could not download certificate (nil response)!')
       end
     rescue Exception => e
       Chef::Log.error("Could not download certificate, failed with #{e}")
@@ -76,27 +95,26 @@ def download_certificate_request(new_resource)
   end
 end
 
-def download_key_request(new_resource)
-  if ::File.exist?("#{node[:boundary][:bprobe][:etc][:path]}/key.pem")
-    Chef::Log.debug("Key file already exists, not downloading.")
+def download_key_request(new_resource, path)
+  if ::File.exist?("#{path}/key.pem")
+    Chef::Log.debug('Key file already exists, not downloading.')
   else
     begin
-      auth = auth_encode()
+      auth = auth_encode(new_resource.api_key)
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-
       key_response = http_request(:get, "#{base_url}/key.pem", headers)
 
       if key_response
-        file "#{node[:boundary][:bprobe][:etc][:path]}/key.pem" do
-          mode 0600
-          owner "root"
-          group "root"
+        file "#{path}/key.pem" do
+          owner 'root'
+          group 'root'
+          mode '0600'
           content key_response.body
           notifies :restart, resources(:service => 'bprobe')
         end
       else
-        Chef::Log.error("Could not download key (nil response)!")
+        Chef::Log.error('Could not download key (nil response)!')
       end
     rescue Exception => e
       Chef::Log.error("Could not download key, failed with #{e}")

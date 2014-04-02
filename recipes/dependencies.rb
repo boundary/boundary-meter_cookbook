@@ -1,9 +1,11 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: bprobe
 # Recipe:: dependencies
 #
 # Copyright 2011, Boundary
+# Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,51 +20,46 @@
 # limitations under the License.
 #
 
-case node[:platform_family]
-when "rhel"
-
-  yum_key "RPM-GPG-KEY-boundary" do
-    url "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
-    action :add
+case node['platform_family']
+when 'rhel'
+  yum_key 'RPM-GPG-KEY-boundary' do
+    url node['bprobe']['repositories']['yum']['key']
   end
 
   # default to 64bit
-  machine = "x86_64"
+  machine = 'x86_64'
 
-  case node[:kernel][:machine]
-  when "x86_64"
-    machine = "x86_64"
-  when "i686"
-    machine = "i386"
-  when "i386"
-    machine = "i386"
+  case node['kernel']['machine']
+  when 'x86_64'
+    machine = 'x86_64'
+  when 'i686'
+    machine = 'i386'
+  when 'i386'
+    machine = 'i386'
   end
 
-  rhel_platform_version = node[:platform] == "amazon" ? "6" : node[:platform_version]
+  rhel_platform_version = node['platform'] == 'amazon' ? '6' : node['platform_version']
 
-  yum_repository "boundary" do
-    description "boundary"
-    url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
-    key "RPM-GPG-KEY-boundary"
+  yum_repository 'boundary' do
+    description 'boundary'
+    url "#{node['bprobe']['repositories']['yum']['url']}/#{machine}/"
+    key 'RPM-GPG-KEY-boundary'
     action :add
   end
 
-  ruby_block "reload-internal-yum-cache" do
+  ruby_block 'reload-internal-yum-cache' do
     block do
       Chef::Provider::Package::Yum::YumCache.instance.reload
     end
   end
+when 'debian', 'ubuntu'
+  package 'apt-transport-https'
 
-when "debian"
-
-  package "apt-transport-https"
-
-  apt_repository "boundary" do
-    uri "https://apt.boundary.com/ubuntu/"
-    distribution node[:lsb][:codename]
-    components ["universe"]
-    key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
-    action :add
+  apt_repository 'boundary' do
+    uri node['bprobe']['repositories']['apt']['url']
+    distribution node['lsb']['codename']
+    components ['universe']
+    key node['bprobe']['repositories']['apt']['key']
   end
 end
 

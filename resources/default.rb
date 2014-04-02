@@ -1,9 +1,11 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: bprobe
 # Resource:: default
 #
 # Copyright 2011, Boundary
+# Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +21,7 @@
 #
 
 actions :create, :delete
+default_action :create if defined?(default_action)
 
 def initialize(*args)
   super
@@ -26,3 +29,5 @@ def initialize(*args)
 end
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
+attribute :org_id, :kind_of => String, :required => true
+attribute :api_key, :kind_of => String, :required => true
