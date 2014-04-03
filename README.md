@@ -13,8 +13,8 @@ Dependencies and their requisite versions, when necessary, are specified in meta
 Setup your API keys in attributes/api.rb
 
 ```ruby
-default['bprobe']['meter']['org_id'] = 'org_id_here'
-default['bprobe']['meter']['api_key'] = 'api_key_here'
+default['boundary_meter']['org_id'] = 'org_id_here'
+default['boundary_meter']['api_key'] = 'api_key_here'
 ```
 
 ##### Boundary Meter Tags
@@ -23,28 +23,28 @@ By default, the cookbook sends the chef_environment as a meter tag to the Bounda
 
 If your host is in EC2 or you are using Opsworks, it adds a few tags specific to those environments.
 
-You can set more tags by manipulating the node['bprobe']['meter']['tags'] attribute.
+You can set more tags by manipulating the node['boundary_meter']['tags'] attribute.
 
 ##### Interfaces
 
-The meter defaults to monitoring all interfaces. You can change this with the node['bprobe']['meter']['interfaces'] array:
+The meter defaults to monitoring all interfaces. You can change this with the node['boundary_meter']['interfaces'] array:
 
 ```ruby
-node['bprobe']['meter']['interfaces'] = [ 'eth0', 'eth2' ]
+node['boundary_meter']['interfaces'] = [ 'eth0', 'eth2' ]
 ```
 
 ##### Hostname
 
-The Boundary meter defaults to using `node['fqdn']` as the hostname. You can override this by setting `node['bprobe']['meter']['hostname']` with a higher precedence then default.
+The Boundary meter defaults to using `node['fqdn']` as the hostname. You can override this by setting `node['boundary_meter']['hostname']` with a higher precedence then default.
 
 ##### Sending to Multiple Orgs
 
 If you would like to "multiplex" your meter traffic to multiple Boundary orgs, we support this using a special variable in the Boundary meter named `ALT_CONFIGS`.
 
-These can be set via the attribute `node['bprobe']['meter']['alt_configs']` which is an array of hashes:
+These can be set via the attribute `node['boundary_meter']['alt_configs']` which is an array of hashes:
 
 ```ruby
-node['bprobe']['meter']['alt_configs'] = [{
+node['boundary_meter']['alt_configs'] = [{
                                             'name' => 'My Secondary Org',
                                             'org_id' => 'secondary_org_id',
                                             'api_key' => 'secondary_api_key'

@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-meter_name = node['bprobe']['hostname']
+meter_name = node['boundary_meter']['hostname']
 
 # delete the cert and key files on disk
 bprobe_certificates meter_name do

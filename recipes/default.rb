@@ -25,11 +25,11 @@ include_recipe 'bprobe::dependencies'
 
 package 'bprobe'
 
-meter_name = node['bprobe']['hostname']
+meter_name = node['boundary_meter']['hostname']
 
 bprobe meter_name do
-  org_id node['bprobe']['meter']['org_id']
-  api_key node['bprobe']['meter']['api_key']
+  org_id node['boundary_meter']['org_id']
+  api_key node['boundary_meter']['api_key']
 end
 
 directory '/etc/bprobe' do
@@ -40,8 +40,8 @@ directory '/etc/bprobe' do
 end
 
 bprobe_certificates meter_name do
-  org_id node['bprobe']['meter']['org_id']
-  api_key node['bprobe']['meter']['api_key']
+  org_id node['boundary_meter']['org_id']
+  api_key node['boundary_meter']['api_key']
 end
 
 service 'bprobe'
@@ -54,7 +54,7 @@ cookbook_file '/etc/bprobe/ca.pem' do
   notifies :restart, resources(:service => 'bprobe')
 end
 
-node['bprobe']['meter']['alt_configs'].each do |config|
+node['boundary_meter']['alt_configs'].each do |config|
   config_dir = "/etc/bprobe_#{config['name']}"
 
   bprobe meter_name do
@@ -90,12 +90,12 @@ template '/etc/default/bprobe' do
   mode '0644'
   notifies :restart, resources(:service => 'bprobe')
   variables({
-              :collector_uri => "tls://#{node['bprobe']['collector']['hostname']}:#{node['bprobe']['collector']['port']}",
-              :interfaces => node['bprobe']['meter']['interfaces'],
-              :pcap_stats => node['bprobe']['meter']['pcap_stats'],
-              :pcap_promisc => node['bprobe']['meter']['pcap_promisc'],
-              :disable_ntp => node['bprobe']['meter']['disable_ntp'],
-              :enable_stun => node['bprobe']['meter']['enable_stun'],
-              :alt_configs => node['bprobe']['meter']['alt_configs'].collect {|cfg| cfg['name']}
+              :collector_uri => "tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
+              :interfaces => node['boundary_meter']['interfaces'],
+              :pcap_stats => node['boundary_meter']['pcap_stats'],
+              :pcap_promisc => node['boundary_meter']['pcap_promisc'],
+              :disable_ntp => node['boundary_meter']['disable_ntp'],
+              :enable_stun => node['boundary_meter']['enable_stun'],
+              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['name']}
             })
 end

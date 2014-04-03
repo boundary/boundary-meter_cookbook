@@ -23,7 +23,7 @@
 case node['platform_family']
 when 'rhel'
   yum_key 'RPM-GPG-KEY-boundary' do
-    url node['bprobe']['repositories']['yum']['key']
+    url node['boundary_meter']['repositories']['yum']['key']
   end
 
   # default to 64bit
@@ -42,7 +42,7 @@ when 'rhel'
 
   yum_repository 'boundary' do
     description 'boundary'
-    url "#{node['bprobe']['repositories']['yum']['url']}/#{machine}/"
+    url "#{node['boundary_meter']['repositories']['yum']['url']}/#{machine}/"
     key 'RPM-GPG-KEY-boundary'
     action :add
   end
@@ -56,10 +56,10 @@ when 'debian', 'ubuntu'
   package 'apt-transport-https'
 
   apt_repository 'boundary' do
-    uri node['bprobe']['repositories']['apt']['url']
+    uri node['boundary_meter']['repositories']['apt']['url']
     distribution node['lsb']['codename']
     components ['universe']
-    key node['bprobe']['repositories']['apt']['key']
+    key node['boundary_meter']['repositories']['apt']['key']
   end
 end
 

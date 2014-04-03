@@ -20,30 +20,30 @@
 # limitations under the License.
 #
 
-default['bprobe']['meter']['org_id'] = ''
-default['bprobe']['meter']['api_key'] = ''
-default['bprobe']['meter']['hostname'] = node['fqdn']
-default['bprobe']['meter']['tags'] = [node.chef_environment]
+default['boundary_meter']['org_id'] = ''
+default['boundary_meter']['api_key'] = ''
+default['boundary_meter']['hostname'] = node['fqdn']
+default['boundary_meter']['tags'] = [node.chef_environment]
 
 # alertnate configurations for multiplexing meter traffic
 # see https://app.boundary.com/docs/meter/2_0_3
-default['bprobe']['meter']['alt_configs'] = []
+default['boundary_meter']['alt_configs'] = []
 
 # explicity list interfaces to monitor (you can leave this empty)
-default['bprobe']['meter']['interfaces'] = []
+default['boundary_meter']['interfaces'] = []
 
 # periodic stats on pcap interface
-default['bprobe']['meter']['pcap_stats'] = 0
+default['boundary_meter']['pcap_stats'] = 0
 
 # promisc mode
-default['bprobe']['meter']['pcap_promisc'] = 0
+default['boundary_meter']['pcap_promisc'] = 0
 
 # STUN support for public IP detection
-default['bprobe']['meter']['enable_stun'] = 0
+default['boundary_meter']['enable_stun'] = 0
 
 #
 # you should not have to modify these values
 #
-default['bprobe']['api']['hostname'] = 'api.boundary.com'
-default['bprobe']['collector']['hostname'] = 'collector.boundary.com'
-default['bprobe']['collector']['port'] = 4740
+default['boundary_meter']['api']['hostname'] = 'api.boundary.com'
+default['boundary_meter']['collector']['hostname'] = 'collector.boundary.com'
+default['boundary_meter']['collector']['port'] = 4740

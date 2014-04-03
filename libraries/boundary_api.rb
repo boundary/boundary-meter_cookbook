@@ -81,9 +81,9 @@ module Boundary
     end
 
     def apply_meter_tags(new_resource)
-      Chef::Log.debug("This meter currently has these attribute based tags [#{node['bprobe']['tags']}]")
+      Chef::Log.debug("This meter currently has these attribute based tags [#{node['boundary_meter']['tags']}]")
 
-      node['bprobe']['tags'].each do |tag|
+      node['boundary_meter']['tags'].each do |tag|
         apply_an_tag(new_resource, tag)
       end
     end
@@ -123,7 +123,7 @@ module Boundary
     end
 
     def build_url(new_resource, action)
-      meters_url = "https://#{node['bprobe']['api']['hostname']}/#{new_resource.org_id}/meters"
+      meters_url = "https://#{node['boundary_meter']['api']['hostname']}/#{new_resource.org_id}/meters"
 
       case action
       when :create

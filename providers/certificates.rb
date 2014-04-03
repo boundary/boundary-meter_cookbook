@@ -55,10 +55,10 @@ def meter_directory(new_resource)
   dir_prefix = "/etc/bprobe"
   dir_path = nil
 
-  if node['bprobe']['meter']['org_id'] == new_resource.org_id
+  if node['boundary_meter']['org_id'] == new_resource.org_id
     dir_path = dir_prefix
   else
-    found = node['bprobe']['meter']['alt_configs'].detect {|meter| meter['org_id'] == new_resource.org_id }
+    found = node['boundary_meter']['alt_configs'].detect {|meter| meter['org_id'] == new_resource.org_id }
 
     if found
       dir_path = "#{dir_prefix}_#{found['name']}"
