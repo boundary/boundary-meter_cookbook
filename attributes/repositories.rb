@@ -1,6 +1,6 @@
 #
 # Author:: Scott Smith (<scott@boundary.com>)
-# Cookbook Name:: bprobe
+# Cookbook Name:: boundary-meter
 # Attributes:: repositories
 #
 # Copyright 2014, Boundary

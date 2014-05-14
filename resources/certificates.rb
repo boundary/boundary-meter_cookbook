@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
 # Author:: Scott Smith (<scott@boundary.com>)
-# Cookbook Name:: bprobe
+# Cookbook Name:: boundary-meter
 # Resource:: certificates
 #
 # Copyright 2011, Boundary

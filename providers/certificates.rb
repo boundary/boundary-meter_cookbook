@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
 # Author:: Scott Smith (<scott@boundary.com>)
-# Cookbook Name:: bprobe
+# Cookbook Name:: boundary-meter
 # Provider:: certificates
 #
 # Copyright 2011, Boundary
@@ -52,7 +52,7 @@ end
 private
 
 def meter_directory(new_resource)
-  dir_prefix = "/etc/bprobe"
+  dir_prefix = "/etc/boundary"
   dir_path = nil
 
   if node['boundary_meter']['org_id'] == new_resource.org_id
@@ -84,7 +84,7 @@ def download_certificate_request(new_resource, path)
           group 'root'
           mode '0600'
           content cert_response.body
-          notifies :restart, resources(:service => 'bprobe')
+          notifies :restart, resources(:service => 'boundary-meter')
         end
       else
         Chef::Log.error('Could not download certificate (nil response)!')
@@ -111,7 +111,7 @@ def download_key_request(new_resource, path)
           group 'root'
           mode '0600'
           content key_response.body
-          notifies :restart, resources(:service => 'bprobe')
+          notifies :restart, resources(:service => 'boundary-meter')
         end
       else
         Chef::Log.error('Could not download key (nil response)!')

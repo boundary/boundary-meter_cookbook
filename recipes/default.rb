@@ -2,7 +2,7 @@
 # Author:: Ben Black (<b@boundary.com>)
 # Author:: Joe Williams (<j@boundary.com>)
 # Author:: Scott Smith (<scott@boundary.com>)
-# Cookbook Name:: bprobe
+# Cookbook Name:: boundary-meter
 # Recipe:: default
 #
 # Copyright 2010, Boundary
@@ -21,43 +21,43 @@
 # limitations under the License.
 #
 
-include_recipe 'bprobe::dependencies'
+include_recipe 'boundary-meter::dependencies'
 
-package 'bprobe'
+package 'boundary-meter'
 
 meter_name = node['boundary_meter']['hostname']
 
-bprobe meter_name do
+boundary_meter meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
 end
 
-directory '/etc/bprobe' do
+directory '/etc/boundary' do
   owner 'root'
   group 'root'
   mode '0755'
   recursive true
 end
 
-bprobe_certificates meter_name do
+boundary_meter_certificates meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
 end
 
-service 'bprobe'
+service 'boundary-meter'
 
-cookbook_file '/etc/bprobe/ca.pem' do
+cookbook_file '/etc/boundary/ca.pem' do
   source 'ca.pem'
   owner 'root'
   group 'root'
   mode '0600'
-  notifies :restart, resources(:service => 'bprobe')
+  notifies :restart, resources(:service => 'boundary-meter')
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  config_dir = "/etc/bprobe_#{config['name']}"
+  config_dir = "/etc/boundary_#{config['name']}"
 
-  bprobe meter_name do
+  boundary_meter meter_name do
     org_id config['org_id']
     api_key config['api_key']
   end
@@ -69,7 +69,7 @@ node['boundary_meter']['alt_configs'].each do |config|
     recursive true
   end
 
-  bprobe_certificates meter_name do
+  boundary_meter_certificates meter_name do
     org_id config['org_id']
     api_key config['api_key']
   end
@@ -79,16 +79,16 @@ node['boundary_meter']['alt_configs'].each do |config|
     owner 'root'
     group 'root'
     mode '0600'
-    notifies :restart, resources(:service => 'bprobe')
+    notifies :restart, resources(:service => 'boundary-meter')
   end
 end
 
-template '/etc/default/bprobe' do
-  source 'bprobe.default.erb'
+template '/etc/default/boundary-meter' do
+  source 'boundary-meter.default.erb'
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, resources(:service => 'bprobe')
+  notifies :restart, resources(:service => 'boundary-meter')
   variables({
               :collector_uri => "tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
               :interfaces => node['boundary_meter']['interfaces'],

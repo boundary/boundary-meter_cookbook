@@ -1,6 +1,6 @@
-### The bprobe Cookbook
+### The boundary-meter Cookbook
 
-This cookbook is used to install and configure (via the Boundary API) the Boundary meter. To get things running, set your Boundary account's org id and API key in the attributes/default.rb and add bprobe::default to your host's run_list.
+This cookbook is used to install and configure (via the Boundary API) the Boundary meter. To get things running, set your Boundary account's org id and API key in the attributes/default.rb and add boundary-meter::default to your host's run_list.
 
 #### Dependencies
 

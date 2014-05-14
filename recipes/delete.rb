@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
 # Author:: Scott Smith (<scott@boundary.com>)
-# Cookbook Name:: bprobe
+# Cookbook Name:: boundary-meter
 # Recipe:: delete
 #
 # Copyright 2011, Boundary
@@ -23,19 +23,19 @@
 meter_name = node['boundary_meter']['hostname']
 
 # delete the cert and key files on disk
-bprobe_certificates meter_name do
+boundary_meter_certificates meter_name do
   action :delete
 end
 
 # delete the meter from the boundary api
-bprobe meter_name do
+boundary_meter meter_name do
   action :delete
 end
 
-service 'bprobe' do
+service 'boundary-meter' do
   action [ :stop, :disable ]
 end
 
-package 'bprobe' do
+package 'boundary-meter' do
   action :remove
 end
