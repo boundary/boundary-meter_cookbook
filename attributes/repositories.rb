@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-default['boundary_meter']['repositories']['apt']['url'] = 'http://apt.cid1.boundary.com/ubuntu/'
-default['boundary_meter']['repositories']['apt']['key'] = 'http://apt.cid1.boundary.com/APT-GPG-KEY-Boundary'
+default['boundary_meter']['repositories']['apt']['url'] = 'http://apt.boundary.com/ubuntu/'
+default['boundary_meter']['repositories']['apt']['key'] = 'http://apt.boundary.com/APT-GPG-KEY-Boundary'
 
-default['boundary_meter']['repositories']['yum']['url'] = 'https://yum.boundary.com/centos/os/5.5'
+default['boundary_meter']['repositories']['yum']['url'] = 'https://yum.boundary.com/centos/os/6.5'
 default['boundary_meter']['repositories']['yum']['key'] = 'https://yum.boundary.com/RPM-GPG-KEY-Boundary'

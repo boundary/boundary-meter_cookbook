@@ -22,10 +22,6 @@
 
 case node['platform_family']
 when 'rhel'
-  yum_key 'RPM-GPG-KEY-boundary' do
-    url node['boundary_meter']['repositories']['yum']['key']
-  end
-
   # default to 64bit
   machine = 'x86_64'
 
@@ -43,8 +39,8 @@ when 'rhel'
   yum_repository 'boundary' do
     description 'boundary'
     url "#{node['boundary_meter']['repositories']['yum']['url']}/#{machine}/"
-    key 'RPM-GPG-KEY-boundary'
-    action :add
+    gpgkey node['boundary_meter']['repositories']['yum']['key']
+    action :create
   end
 
   ruby_block 'reload-internal-yum-cache' do

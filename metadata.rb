@@ -11,4 +11,4 @@ version          '1.0.0'
 end
 
 depends 'apt'
-depends 'yum', '<= 2.4.4'
+depends 'yum', '>= 3.2.0'
