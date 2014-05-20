@@ -23,62 +23,26 @@
 
 include_recipe 'boundary-meter::dependencies'
 
-package 'boundary-meter'
+package 'boundary-meter' do
+  action :upgrade
+end
+
+service 'boundary-meter'
 
 meter_name = node['boundary_meter']['hostname']
 
 boundary_meter meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
-end
-
-directory '/etc/boundary' do
-  owner 'root'
-  group 'root'
-  mode '0755'
-  recursive true
-end
-
-boundary_meter_certificates meter_name do
-  org_id node['boundary_meter']['org_id']
-  api_key node['boundary_meter']['api_key']
-end
-
-service 'boundary-meter'
-
-cookbook_file '/etc/boundary/ca.pem' do
-  source 'ca.pem'
-  owner 'root'
-  group 'root'
-  mode '0600'
+  target_dir '/etc/boundary'
   notifies :restart, resources(:service => 'boundary-meter')
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  config_dir = "/etc/boundary_#{config['name']}"
-
   boundary_meter meter_name do
     org_id config['org_id']
     api_key config['api_key']
-  end
-
-  directory config_dir do
-    owner 'root'
-    group 'root'
-    mode '0755'
-    recursive true
-  end
-
-  boundary_meter_certificates meter_name do
-    org_id config['org_id']
-    api_key config['api_key']
-  end
-
-  cookbook_file "#{config_dir}/ca.pem" do
-    source 'ca.pem'
-    owner 'root'
-    group 'root'
-    mode '0600'
+    target_dir = "/etc/boundary_#{config['name']}"
     notifies :restart, resources(:service => 'boundary-meter')
   end
 end

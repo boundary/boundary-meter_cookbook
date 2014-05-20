@@ -1,10 +1,8 @@
 #
-# Author:: Joe Williams (<j@boundary.com>)
-# Author:: Scott Smith (<scott@boundary.com>)
+# Author:: Zachary Schneider (<schneider@boundary.com>)
 # Cookbook Name:: boundary-meter
 # Provider:: default
 #
-# Copyright 2011, Boundary
 # Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,38 +18,52 @@
 # limitations under the License.
 #
 
-include Boundary::API
+include Boundary::Meter
 
 action :create do
-  if meter_exists?(new_resource)
-    Chef::Log.debug('Boundary meter already exists, not creating.')
-  else
-    create_meter(new_resource)
-  end
+  if meter_exists?(new_resource) == false
 
-  new_resource.updated_by_last_action(true)
+    create_meter new_resource 
+    new_resource.updated_by_last_action true
+  else
+    new_resource.updated_by_last_action false
+  end
 end
 
 action :delete do
-  if meter_exists?(new_resource)
-    delete_meter_request(new_resource)
-  else
-    Chef::Log.debug("Boundary meter doesn't exist, not deleting.")
-  end
+  delete_meter new_resource if meter_exists?(new_resource)
 
-  new_resource.updated_by_last_action(true)
+  new_resource.updated_by_last_action true
 end
 
 private
 
-def create_meter(resource)
-  create_meter_request(resource)
-
-  apply_cloud_tags(resource)
-  apply_meter_tags(resource)
-  node.roles.each do |role|
-    apply_an_tag(resource, role)
+def meter_exists?(resource)
+  if ::File.exists?("#{resource.target_dir}/meter.conf")
+    return true
+  else
+    return false
   end
+end
 
-  apply_an_tag(resource, node.chef_environment)
+def create_meter(resource)
+  setup_conf_dir resource
+
+  Chef::Log.info("Creating meter [#{resource.name}]")
+  begin
+    run_command build_command resource, :create
+  rescue Exception => e
+    Chef::Log.error("Could not create meter [#{resource.name}], failed with #{e}")
+  end
+end
+
+def delete_meter(resource)
+  remove_conf_dir resource
+
+  Chef::Log.info("Deleting meter [#{resource.name}]")
+  begin
+    run_command build_command resource, :delete
+  rescue Exception => e
+    Chef::Log.error("Could not delete meter [#{resource.name}], failed with #{e}")
+  end
 end

@@ -58,10 +58,3 @@ when 'debian', 'ubuntu'
     key node['boundary_meter']['repositories']['apt']['key']
   end
 end
-
-cookbook_file "#{Chef::Config[:file_cache_path]}/cacert.pem" do
-  source "cacert.pem"
-  mode 0600
-  owner "root"
-  group "root"
-end

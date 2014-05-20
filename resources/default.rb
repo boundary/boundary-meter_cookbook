@@ -31,3 +31,4 @@ end
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :org_id, :kind_of => String, :required => true
 attribute :api_key, :kind_of => String, :required => true
+attribute :target_dir, :kind_of => String, :required => true

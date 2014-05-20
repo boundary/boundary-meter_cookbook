@@ -22,13 +22,19 @@
 
 meter_name = node['boundary_meter']['hostname']
 
-# delete the cert and key files on disk
-boundary_meter_certificates meter_name do
-  action :delete
+node['boundary_meter']['alt_configs'].each do |config|
+  boundary_meter meter_name do
+    org_id config['org_id']
+    api_key config['api_key']
+    target_dir = "/etc/boundary_#{config['name']}"
+    action :delete
+  end
 end
 
-# delete the meter from the boundary api
 boundary_meter meter_name do
+  org_id node['boundary_meter']['org_id']
+  api_key node['boundary_meter']['api_key']
+  target_dir '/etc/boundary'
   action :delete
 end
 
