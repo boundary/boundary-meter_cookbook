@@ -1,4 +1,6 @@
 #
+# Author:: Joe Williams (<j@boundary.com>)
+# Author:: Scott Smith (<scott@boundary.com>)
 # Author:: Zachary Schneider (<schneider@boundary.com>)
 # Cookbook Name:: boundary-meter
 # Provider:: default
