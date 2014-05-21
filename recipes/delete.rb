@@ -23,7 +23,7 @@
 meter_name = node['boundary_meter']['hostname']
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter meter_name do
+  boundary_meter config['name'] do
     org_id config['org_id']
     api_key config['api_key']
     is_alt true
@@ -42,5 +42,5 @@ service 'boundary-meter' do
 end
 
 package 'boundary-meter' do
-  action :remove
+  action :purge
 end

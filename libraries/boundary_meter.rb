@@ -29,7 +29,7 @@ module Boundary
     end
 
     def remove_conf_dir(resource)
-      if ::Dir.exists?(resource.conf_dir) && resource.conf_dir != Boundary::Meter::CONF_DIR && resource.target_dir.include?(Boundary::Meter::CONF_DIR)
+      if ::Dir.exists?(resource.conf_dir) && resource.conf_dir != Boundary::Meter::CONF_DIR && resource.conf_dir.include?(Boundary::Meter::CONF_DIR)
         ::FileUtils.rm Dir.glob "#{resource.conf_dir}/*"
         ::Dir.rmdir resource.conf_dir         
       end
