@@ -34,15 +34,14 @@ meter_name = node['boundary_meter']['hostname']
 boundary_meter meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
-  target_dir '/etc/boundary'
   notifies :restart, resources(:service => 'boundary-meter')
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter meter_name do
+  boundary_meter config['name'] do
     org_id config['org_id']
     api_key config['api_key']
-    target_dir = "/etc/boundary_#{config['name']}"
+    is_alt true
     notifies :restart, resources(:service => 'boundary-meter')
   end
 end

@@ -26,7 +26,7 @@ node['boundary_meter']['alt_configs'].each do |config|
   boundary_meter meter_name do
     org_id config['org_id']
     api_key config['api_key']
-    target_dir = "/etc/boundary_#{config['name']}"
+    is_alt true
     action :delete
   end
 end
@@ -34,7 +34,6 @@ end
 boundary_meter meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
-  target_dir '/etc/boundary'
   action :delete
 end
 

@@ -28,7 +28,17 @@ def initialize(*args)
   @action = :create
 end
 
+def conf_dir( arg=nil )
+  if arg.nil? and @conf_dir.nil? and is_alt == true
+    "%s_%s" % [Boundary::Meter::CONF_DIR, name]
+  elsif arg.nil? and @conf_dir.nil? and is_alt == false
+  	Boundary::Meter::CONF_DIR
+  else
+    set_or_return( :conf_dir, arg, :kind_of => String )
+  end
+end
+
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :org_id, :kind_of => String, :required => true
 attribute :api_key, :kind_of => String, :required => true
-attribute :target_dir, :kind_of => String, :required => true
+attribute :is_alt, :kind_of => [TrueClass, FalseClass], :default => false

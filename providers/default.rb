@@ -41,7 +41,7 @@ end
 private
 
 def meter_exists?(resource)
-  if ::File.exists?("#{resource.target_dir}/meter.conf")
+  if ::File.exists?("#{resource.conf_dir}/meter.conf")
     return true
   else
     return false
@@ -52,6 +52,7 @@ def create_meter(resource)
   setup_conf_dir resource
 
   Chef::Log.info("Creating meter [#{resource.name}]")
+  
   begin
     run_command build_command resource, :create
   rescue Exception => e
@@ -63,6 +64,7 @@ def delete_meter(resource)
   remove_conf_dir resource
 
   Chef::Log.info("Deleting meter [#{resource.name}]")
+  
   begin
     run_command build_command resource, :delete
   rescue Exception => e

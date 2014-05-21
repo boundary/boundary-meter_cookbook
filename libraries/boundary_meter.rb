@@ -21,15 +21,17 @@
 
 module Boundary
   module Meter
+    CONF_DIR = '/etc/boundary'
+
     def setup_conf_dir(resource)
-      Dir.mkdir(resource.target_dir) unless ::Dir.exists?(resource.target_dir)
-      ::File.cp '/etc/boundary/ca.pem', "#{resource.target_dir}/" unless ::File.exists?("#{resource.target_dir}/ca.pem")
+      Dir.mkdir(resource.conf_dir) unless ::Dir.exists?(resource.conf_dir)
+      ::File.cp '/etc/boundary/ca.pem', "#{resource.conf_dir}/" unless ::File.exists?("#{resource.conf_dir}/ca.pem")
     end
 
     def remove_conf_dir(resource)
-      if ::Dir.exists?(resource.target_dir) && resource.target_dir != '/etc/boundary' && resource.target_dir.include?('/etc/boundary')
-        ::FileUtils.rm Dir.glob "#{resource.target_dir}/*"
-        ::Dir.rmdir resource.target_dir         
+      if ::Dir.exists?(resource.conf_dir) && resource.conf_dir != Boundary::Meter::CONF_DIR && resource.target_dir.include?(Boundary::Meter::CONF_DIR)
+        ::FileUtils.rm Dir.glob "#{resource.conf_dir}/*"
+        ::Dir.rmdir resource.conf_dir         
       end
     end
 
@@ -38,7 +40,7 @@ module Boundary
         "boundary-meter -l #{action.to_s}",
         "-L https://#{node['boundary_meter']['api']['hostname']}",
         "-p #{node['boundary_meter']['org_id']}:#{node['boundary_meter']['api_key']}",
-        "-b #{resource.target_dir}",
+        "-b #{resource.conf_dir}",
         "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
         "--nodename #{resource.name}"
       ]
