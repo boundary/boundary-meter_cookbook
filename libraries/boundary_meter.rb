@@ -25,7 +25,7 @@ module Boundary
 
     def setup_conf_dir(resource)
       Dir.mkdir(resource.conf_dir) unless ::Dir.exists?(resource.conf_dir)
-      ::FileUtils.cp '/etc/boundary/ca.pem', "#{resource.conf_dir}/" unless ::File.exists?("#{resource.conf_dir}/ca.pem")
+      ::FileUtils.cp "#{Boundary::Meter::CONF_DIR}/ca.pem", "#{resource.conf_dir}/" unless ::File.exists?("#{resource.conf_dir}/ca.pem")
     end
 
     def remove_conf_dir(resource)
