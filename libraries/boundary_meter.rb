@@ -25,7 +25,7 @@ module Boundary
 
     def setup_conf_dir(resource)
       Dir.mkdir(resource.conf_dir) unless ::Dir.exists?(resource.conf_dir)
-      ::File.cp '/etc/boundary/ca.pem', "#{resource.conf_dir}/" unless ::File.exists?("#{resource.conf_dir}/ca.pem")
+      ::FileUtils.cp '/etc/boundary/ca.pem', "#{resource.conf_dir}/" unless ::File.exists?("#{resource.conf_dir}/ca.pem")
     end
 
     def remove_conf_dir(resource)
@@ -39,10 +39,10 @@ module Boundary
       command = [
         "boundary-meter -l #{action.to_s}",
         "-L https://#{node['boundary_meter']['api']['hostname']}",
-        "-p #{node['boundary_meter']['org_id']}:#{node['boundary_meter']['api_key']}",
+        "-p #{resource.org_id}:#{resource.api_key}",
         "-b #{resource.conf_dir}",
         "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
-        "--nodename #{resource.name}"
+        "--nodename #{node['boundary_meter']['hostname']}"
       ]
 
       if action == :create
