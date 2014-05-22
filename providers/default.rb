@@ -44,11 +44,7 @@ end
 private
 
 def meter_exists?(resource)
-  if ::File.exists?("#{resource.conf_dir}/meter.conf")
-    return true
-  else
-    return false
-  end
+  return ::File.exists?("#{resource.conf_dir}/meter.conf")
 end
 
 def create_meter(resource)
