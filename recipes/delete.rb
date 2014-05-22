@@ -20,7 +20,9 @@
 # limitations under the License.
 #
 
-meter_name = node['boundary_meter']['hostname']
+service 'boundary-meter' do
+  action [ :stop, :disable ]
+end
 
 node['boundary_meter']['alt_configs'].each do |config|
   boundary_meter config['name'] do
@@ -31,14 +33,12 @@ node['boundary_meter']['alt_configs'].each do |config|
   end
 end
 
+meter_name = node['boundary_meter']['hostname']
+
 boundary_meter meter_name do
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
   action :delete
-end
-
-service 'boundary-meter' do
-  action [ :stop, :disable ]
 end
 
 package 'boundary-meter' do
