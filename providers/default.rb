@@ -44,6 +44,9 @@ end
 private
 
 def meter_exists?(resource)
+  # If meter is running but is an unprovisioned state return false
+  return false if get_status(resource) == 'connected'
+
   return ::File.exists?("#{resource.conf_dir}/meter.conf")
 end
 

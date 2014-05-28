@@ -3,7 +3,6 @@
 # Cookbook Name:: boundary-meter
 # Library:: boundary_meter
 #
-# Copyright 2011, Boundary
 # Copyright 2014, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +20,20 @@
 
 module Boundary
   module Meter
+    
     CONF_DIR = '/etc/boundary'
+
+    STATUS_FILE = '/var/run/boundary-meter.status'
+
+    def get_status(resource)
+      status_file = (resource.is_alt == false) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.name}"
+
+      if ::File.exists?(status_file)
+        return ::File.open(status_file, 'rb').read
+      else
+        return nil
+      end
+    end
 
     def setup_conf_dir(resource)
       Dir.mkdir(resource.conf_dir) unless ::Dir.exists?(resource.conf_dir)
@@ -66,6 +78,7 @@ module Boundary
       raise Exception.new("Command Failed") unless $? == 0
     end
 
+    # TODO rethink this. This should be handled elsewhere
     def collect_tags
       tags = []
 
