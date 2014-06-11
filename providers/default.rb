@@ -23,7 +23,7 @@
 include Boundary::Meter
 
 action :create do
-  if meter_exists?(new_resource) == false
+  if meter_exists?(new_resource)
 
     create_meter new_resource 
     new_resource.updated_by_last_action true
