@@ -38,15 +38,9 @@ when 'rhel'
 
   yum_repository 'boundary' do
     description 'boundary'
-    url "#{node['boundary_meter']['repositories']['yum']['url']}/#{machine}/"
+    baseurl "#{node['boundary_meter']['repositories']['yum']['url']}/#{machine}/"
     gpgkey node['boundary_meter']['repositories']['yum']['key']
     action :create
-  end
-
-  ruby_block 'reload-internal-yum-cache' do
-    block do
-      Chef::Provider::Package::Yum::YumCache.instance.reload
-    end
   end
 when 'debian', 'ubuntu'
   package 'apt-transport-https'
