@@ -22,19 +22,13 @@
 
 case node['platform_family']
 when 'rhel'
-  # default to 64bit
-  machine = 'x86_64'
-
   case node['kernel']['machine']
-  when 'x86_64'
+  # There are no i686 meter builds
+  when 'i686', 'i386'
+    machine = 'i386'
+  else
     machine = 'x86_64'
-  when 'i686'
-    machine = 'i386'
-  when 'i386'
-    machine = 'i386'
   end
-
-  rhel_platform_version = node['platform'] == 'amazon' ? '6' : node['platform_version']
 
   yum_repository 'boundary' do
     description 'boundary'
