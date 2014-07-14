@@ -26,7 +26,7 @@ module Boundary
     STATUS_FILE = '/var/run/boundary-meter.status'
 
     def get_status(resource)
-      status_file = (resource.is_alt == false) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.name}"
+      status_file = (resource.conf_name == nil) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.conf_name}"
 
       if ::File.exists?(status_file)
         return ::File.open(status_file, 'rb').read
@@ -54,7 +54,7 @@ module Boundary
         "-p #{resource.org_id}:#{resource.api_key}",
         "-b #{resource.conf_dir}",
         "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
-        "--nodename #{node['boundary_meter']['hostname']}"
+        "--nodename #{resource.node_name}"
       ]
 
       if action == :create

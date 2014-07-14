@@ -31,17 +31,19 @@ service 'boundary-meter'
 
 meter_name = node['boundary_meter']['hostname']
 
-boundary_meter meter_name do
+boundary_meter "#{meter_name} default" do
+  node_name meter_name
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
   notifies :restart, resources(:service => 'boundary-meter')
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter config['name'] do
+  boundary_meter "#{meter_name} #{config['conf_name']}" do
+    node_name meter_name
     org_id config['org_id']
     api_key config['api_key']
-    is_alt true
+    conf_name config['conf_name']
     notifies :restart, resources(:service => 'boundary-meter')
   end
 end
@@ -59,6 +61,6 @@ template '/etc/default/boundary-meter' do
               :pcap_promisc => node['boundary_meter']['pcap_promisc'],
               :disable_ntp => node['boundary_meter']['disable_ntp'],
               :enable_stun => node['boundary_meter']['enable_stun'],
-              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['name']}
+              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['conf_name']}
             })
 end
