@@ -24,7 +24,7 @@
 include_recipe 'boundary-meter::dependencies'
 
 package 'boundary-meter' do
-  action :upgrade
+  action node['boundary_meter']['package'].to_sym
 end
 
 service 'boundary-meter'

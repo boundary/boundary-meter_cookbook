@@ -25,6 +25,11 @@ default['boundary_meter']['api_key'] = ''
 default['boundary_meter']['hostname'] = node['fqdn']
 default['boundary_meter']['tags'] = [node.chef_environment]
 
+# install or upgrade
+# if you opt for upgrade you may notice small metric gaps
+# following a chef run that upgrades the meter package
+default['boundary_meter']['package'] = 'upgrade'
+
 # alertnate configurations for multiplexing meter traffic
 # see https://app.boundary.com/docs/meter/2_0_3
 default['boundary_meter']['alt_configs'] = []
