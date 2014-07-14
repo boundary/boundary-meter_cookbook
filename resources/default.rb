@@ -29,9 +29,9 @@ def initialize(*args)
 end
 
 def conf_dir( arg=nil )
-  if arg.nil? and @conf_dir.nil? and conf_name != nil
-    "%s_%s" % [Boundary::Meter::CONF_DIR, conf_name]
-  elsif arg.nil? and @conf_dir.nil? and conf_name == nil
+  if arg.nil? and @conf_dir.nil? and is_alt == true
+    "%s_%s" % [Boundary::Meter::CONF_DIR, name]
+  elsif arg.nil? and @conf_dir.nil? and is_alt == false
   	Boundary::Meter::CONF_DIR
   else
     set_or_return( :conf_dir, arg, :kind_of => String )
@@ -42,4 +42,4 @@ attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :node_name, :kind_of => String, :required => true
 attribute :org_id, :kind_of => String, :required => true
 attribute :api_key, :kind_of => String, :required => true
-attribute :conf_name, :kind_of => String, :default => nil
+attribute :is_alt, :kind_of => [TrueClass, FalseClass], :default => false

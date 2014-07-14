@@ -26,7 +26,7 @@ module Boundary
     STATUS_FILE = '/var/run/boundary-meter.status'
 
     def get_status(resource)
-      status_file = (resource.conf_name == nil) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.conf_name}"
+      status_file = (resource.is_alt == false) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.name}"
 
       if ::File.exists?(status_file)
         return ::File.open(status_file, 'rb').read

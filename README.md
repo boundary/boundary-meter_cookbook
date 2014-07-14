@@ -45,7 +45,7 @@ These can be set via the attribute `node['boundary_meter']['alt_configs']` which
 
 ```ruby
 node['boundary_meter']['alt_configs'] = [{
-                                            'conf_name' => 'secondary',
+                                            'name' => 'secondary',
                                             'org_id' => 'secondary_org_id',
                                             'api_key' => 'secondary_api_key'
                                           }

@@ -24,14 +24,14 @@
 include_recipe 'boundary-meter::dependencies'
 
 package 'boundary-meter' do
-  action node['boundary_meter']['package'].to_sym
+  action node['boundary_meter']['install_type'].to_sym
 end
 
 service 'boundary-meter'
 
 meter_name = node['boundary_meter']['hostname']
 
-boundary_meter "#{meter_name} default" do
+boundary_meter "default" do
   node_name meter_name
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
@@ -39,11 +39,11 @@ boundary_meter "#{meter_name} default" do
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter "#{meter_name} #{config['conf_name']}" do
+  boundary_meter "#{config['name']}" do
     node_name meter_name
     org_id config['org_id']
     api_key config['api_key']
-    conf_name config['conf_name']
+    is_alt true
     notifies :restart, resources(:service => 'boundary-meter')
   end
 end
@@ -61,6 +61,6 @@ template '/etc/default/boundary-meter' do
               :pcap_promisc => node['boundary_meter']['pcap_promisc'],
               :disable_ntp => node['boundary_meter']['disable_ntp'],
               :enable_stun => node['boundary_meter']['enable_stun'],
-              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['conf_name']}
+              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['name']}
             })
 end
