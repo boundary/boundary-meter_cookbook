@@ -24,19 +24,19 @@ include Boundary::Meter
 
 action :create do
   if meter_exists?(new_resource)
-    new_resource.updated_by_last_action false
+    new_resource.updated_by_last_action(false)
   else
     create_meter new_resource 
-    new_resource.updated_by_last_action true
+    new_resource.updated_by_last_action(true)
   end
 end
 
 action :delete do
   if meter_exists?(new_resource)
     delete_meter new_resource 
-    new_resource.updated_by_last_action true
+    new_resource.updated_by_last_action(true)
   else
-    new_resource.updated_by_last_action false
+    new_resource.updated_by_last_action(false)
   end
 end
 
