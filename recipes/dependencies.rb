@@ -30,9 +30,16 @@ when 'rhel'
     machine = 'x86_64'
   end
 
+  case node['platform']
+  when 'amazon'
+    version = '6'
+  else
+    version = node[:platform_version]
+  end
+
   yum_repository 'boundary' do
     description 'boundary'
-    baseurl "#{node['boundary_meter']['repositories']['yum']['url']}/#{machine}/"
+    baseurl "#{node['boundary_meter']['repositories']['yum']['url']}/#{version}/#{machine}/"
     gpgkey node['boundary_meter']['repositories']['yum']['key']
     action :create
   end
