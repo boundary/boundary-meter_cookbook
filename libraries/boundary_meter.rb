@@ -73,9 +73,9 @@ module Boundary
     def run_command(command)
       Chef::Log.info(command)
 
-      system command
-
-      raise Exception.new("Command Failed") unless $? == 0
+      cmd = Mixlib::ShellOut.new(command)
+      cmd.run_command
+      cmd.error!
     end
 
     # TODO rethink this. This should be handled elsewhere
@@ -97,8 +97,8 @@ module Boundary
           tags.push node['ec2']['placement_availability_zone']
         end
 
-        if node[:ec2][:instance_type]
-          tags.push node[:ec2][:instance_type]
+        if node['ec2']['instance_type']
+          tags.push node['ec2']['instance_type']
         end
       end
 

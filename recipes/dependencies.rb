@@ -34,7 +34,7 @@ when 'rhel'
   when 'amazon'
     version = '6'
   else
-    version = node[:platform_version]
+    version = node['platform_version']
   end
 
   yum_repository 'boundary' do

@@ -35,16 +35,16 @@ boundary_meter "default" do
   node_name meter_name
   org_id node['boundary_meter']['org_id']
   api_key node['boundary_meter']['api_key']
-  notifies :restart, resources(:service => 'boundary-meter')
+  notifies :restart, "service[boundary-meter]"
 end
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter "#{config['name']}" do
+  boundary_meter config['name'] do
     node_name meter_name
     org_id config['org_id']
     api_key config['api_key']
     is_alt true
-    notifies :restart, resources(:service => 'boundary-meter')
+    notifies :restart, "service[boundary-meter]"
   end
 end
 
@@ -53,7 +53,7 @@ template '/etc/default/boundary-meter' do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, resources(:service => 'boundary-meter')
+  notifies :restart, "service[boundary-meter]"
   variables({
               :collector_uri => "tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
               :interfaces => node['boundary_meter']['interfaces'],

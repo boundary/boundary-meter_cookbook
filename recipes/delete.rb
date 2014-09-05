@@ -27,7 +27,7 @@ end
 meter_name = node['boundary_meter']['hostname']
 
 node['boundary_meter']['alt_configs'].each do |config|
-  boundary_meter "#{config['name']}" do
+  boundary_meter config['name'] do
     node_name meter_name
     org_id config['org_id']
     api_key config['api_key']
