@@ -30,7 +30,7 @@ default['boundary_meter']['tags'] = [node.chef_environment]
 # following a chef run that upgrades the meter package
 default['boundary_meter']['install_type'] = 'upgrade'
 
-# alertnate configurations for multiplexing meter traffic
+# alternate configurations for multiplexing meter traffic
 # see https://app.boundary.com/docs/meter/2_0_3
 default['boundary_meter']['alt_configs'] = []
 
