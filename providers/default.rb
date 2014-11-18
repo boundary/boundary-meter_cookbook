@@ -26,14 +26,14 @@ action :create do
   if meter_exists?(new_resource)
     new_resource.updated_by_last_action(false)
   else
-    create_meter new_resource 
+    create_meter new_resource
     new_resource.updated_by_last_action(true)
   end
 end
 
 action :delete do
   if meter_exists?(new_resource)
-    delete_meter new_resource 
+    delete_meter new_resource
     new_resource.updated_by_last_action(true)
   else
     new_resource.updated_by_last_action(false)
@@ -44,16 +44,15 @@ private
 
 def meter_exists?(resource)
   # If meter is running but is an unprovisioned state return false
-  return false if get_status(resource) == 'connected'
-
-  return ::File.exists?("#{resource.conf_dir}/meter.conf")
+  ::File.exists?("#{resource.conf_dir}/meter.conf") and
+	  meter_provisioned?(resource)
 end
 
 def create_meter(resource)
   setup_conf_dir resource
 
   Chef::Log.info("Creating meter [#{resource.name}]")
-  
+
   begin
     run_command build_command resource, :create
   rescue Exception => e
@@ -65,7 +64,7 @@ def delete_meter(resource)
   remove_conf_dir resource
 
   Chef::Log.info("Deleting meter [#{resource.name}]")
-  
+
   begin
     run_command build_command resource, :delete
   rescue Exception => e

@@ -10,11 +10,16 @@ Dependencies and their requisite versions, when necessary, are specified in meta
 
 ##### API Keys
 
-Setup your API keys in attributes/api.rb
+Setup your API keys in attributes/api.rb for Boundary Enterprise
 
 ```ruby
-default['boundary_meter']['org_id'] = 'org_id_here'
-default['boundary_meter']['api_key'] = 'api_key_here'
+default['boundary_meter']['token'] = 'org_id:api_key'
+```
+
+or Boundary Premium
+
+```ruby
+default['boundary_meter']['token'] = 'api_token'
 ```
 
 ##### Boundary Meter Tags
@@ -43,11 +48,20 @@ If you would like to "multiplex" your meter traffic to multiple Boundary orgs, w
 
 These can be set via the attribute `node['boundary_meter']['alt_configs']` which is an array of hashes:
 
+For Boundary Enterprise
 ```ruby
 node['boundary_meter']['alt_configs'] = [{
                                             'name' => 'secondary',
-                                            'org_id' => 'secondary_org_id',
-                                            'api_key' => 'secondary_api_key'
+                                            'org_id:api_key'
+                                          }
+                                         ]
+```
+
+or Boundary Premium
+```ruby
+node['boundary_meter']['alt_configs'] = [{
+                                            'name' => 'secondary',
+                                            'api_token'
                                           }
                                          ]
 ```
