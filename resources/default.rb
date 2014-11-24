@@ -40,6 +40,5 @@ end
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :node_name, :kind_of => String, :required => true
-attribute :org_id, :kind_of => String, :required => true
-attribute :api_key, :kind_of => String, :required => true
+attribute :token, :kind_of => String, :required => true
 attribute :is_alt, :kind_of => [TrueClass, FalseClass], :default => false

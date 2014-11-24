@@ -29,8 +29,7 @@ meter_name = node['boundary_meter']['hostname']
 node['boundary_meter']['alt_configs'].each do |config|
   boundary_meter config['name'] do
     node_name meter_name
-    org_id config['org_id']
-    api_key config['api_key']
+    token config['token']
     is_alt true
     action :delete
   end
@@ -38,8 +37,7 @@ end
 
 boundary_meter "default" do
   node_name meter_name
-  org_id node['boundary_meter']['org_id']
-  api_key node['boundary_meter']['api_key']
+  token node['boundary_meter']['token']
   action :delete
 end
 

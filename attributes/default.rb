@@ -20,8 +20,7 @@
 # limitations under the License.
 #
 
-default['boundary_meter']['org_id'] = ''
-default['boundary_meter']['api_key'] = ''
+default['boundary_meter']['token'] = ''
 default['boundary_meter']['hostname'] = node['fqdn']
 default['boundary_meter']['tags'] = [node.chef_environment]
 
@@ -52,3 +51,4 @@ default['boundary_meter']['enable_stun'] = 0
 default['boundary_meter']['api']['hostname'] = 'api.boundary.com'
 default['boundary_meter']['collector']['hostname'] = 'collector.boundary.com'
 default['boundary_meter']['collector']['port'] = 4740
+default['boundary_meter']['premium-api']['hostname'] = 'premium-api.boundary.com'

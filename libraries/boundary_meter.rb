@@ -20,19 +20,19 @@
 
 module Boundary
   module Meter
-    
+
     CONF_DIR = '/etc/boundary'
 
-    STATUS_FILE = '/var/run/boundary-meter.status'
+    def get_meter(resource)
+      result = `boundary-meter -l json -b #{Boundary::Meter::CONF_DIR}`
+      raise Exception.new("boundary meter status failed") unless $?.to_i == 0
+      json = JSON.parse(result)
+    end
 
-    def get_status(resource)
-      status_file = (resource.is_alt == false) ? Boundary::Meter::STATUS_FILE : "#{Boundary::Meter::STATUS_FILE}_#{resource.name}"
-
-      if ::File.exists?(status_file)
-        return ::File.open(status_file, 'rb').read
-      else
-        return nil
-      end
+    def meter_provisioned?(resource)
+      meter = get_meter(resource)
+      (meter['id'] and meter['connected'] == 'true') or \
+          (meter['premium'] and meter['premium']['projectId'])
     end
 
     def setup_conf_dir(resource)
@@ -43,7 +43,7 @@ module Boundary
     def remove_conf_dir(resource)
       if ::File.directory?(resource.conf_dir) && resource.conf_dir != Boundary::Meter::CONF_DIR && resource.conf_dir.include?(Boundary::Meter::CONF_DIR)
         ::FileUtils.rm Dir.glob "#{resource.conf_dir}/*"
-        ::Dir.rmdir resource.conf_dir         
+        ::Dir.rmdir resource.conf_dir
       end
     end
 
@@ -51,7 +51,8 @@ module Boundary
       command = [
         "boundary-meter -l #{action.to_s}",
         "-L https://#{node['boundary_meter']['api']['hostname']}",
-        "-p #{resource.org_id}:#{resource.api_key}",
+        "-P https://#{node['boundary_meter']['premium-api']['hostname']}",
+        "-p #{resource.token}",
         "-b #{resource.conf_dir}",
         "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
         "--nodename #{resource.node_name}"
