@@ -1,12 +1,12 @@
-### The boundary-meter Cookbook
+# The boundary-meter Cookbook
 
 This cookbook is used to install and configure (via the Boundary API) the Boundary meter. To get things running, set your Boundary account's org id and API key in the attributes/default.rb and add boundary-meter::default to your host's run_list.
 
-#### Dependencies
+## Dependencies
 
 Dependencies and their requisite versions, when necessary, are specified in metadata.rb.
 
-#### Configuration Options
+## Configuration Options
 
 ##### API Keys
 
@@ -73,3 +73,26 @@ This cookbook includes automatic detection and tagging of your meter with variou
 #### OpsWorks
 
 If you are using OpsWorks this cookbook should work out of the box (with the above dependencies). This cookbook also includes automatic detection and tagging of your meter with layers, stack name and applications if any exist.
+
+#### Databag Merge
+
+You have the option to override default meter attributes from a databag/item on your Chef Server by setting the following attributes:
+
+```node['boundary_meter']['data_bag']['merge'] = true```
+
+```node['boundary_meter']['data_bag']['name']= 'boundary_meter'```
+
+```node['boundary_meter']['data_bag']['item'] = 'default'```
+
+#### Meter Configuration Hash
+
+You have the option of providing a configuration hash for overriding defaults in meter.conf.  For example:
+
+```node['boundary_meter']['meter_conf'] = {'debug' => 0,
+                                           'tls' => {
+                                                    'skip_validation' => false
+                                                    }
+                                          }```
+
+
+

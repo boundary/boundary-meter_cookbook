@@ -19,18 +19,23 @@
 #
 
 module Boundary
-  module Meter
+  class Meter
+    attr_accessor :node
 
-    CONF_DIR = '/etc/boundary'
+    CONF_DIR='/etc/boundary'
 
-    def get_meter(resource)
-      result = `boundary-meter -l json -b #{Boundary::Meter::CONF_DIR}`
-      raise Exception.new("boundary meter status failed") unless $?.to_i == 0
-      json = JSON.parse(result)
+    def initialize(node)
+      @node = node
     end
 
-    def meter_provisioned?(resource)
-      meter = get_meter(resource)
+    def get(resource)
+      result = `boundary-meter -l json -b #{Boundary::Meter::CONF_DIR}`
+      raise Exception.new("boundary meter status failed") unless $?.to_i == 0
+      JSON.parse(result)
+    end
+
+    def provisioned?(resource)
+      meter = get(resource)
       (meter['id'] and meter['connected'] == 'true') or \
           (meter['premium'] and meter['premium']['projectId'])
     end
@@ -49,13 +54,13 @@ module Boundary
 
     def build_command(resource, action)
       command = [
-        "boundary-meter -l #{action.to_s}",
-        "-L https://#{node['boundary_meter']['api']['hostname']}",
-        "-P https://#{node['boundary_meter']['premium-api']['hostname']}",
-        "-p #{resource.token}",
-        "-b #{resource.conf_dir}",
-        "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
-        "--nodename #{resource.node_name}"
+          "boundary-meter -l #{action.to_s}",
+          "-L https://#{node['boundary_meter']['api']['hostname']}",
+          "-P https://#{node['boundary_meter']['premium-api']['hostname']}",
+          "-p #{resource.token}",
+          "-b #{resource.conf_dir}",
+          "-n tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
+          "--nodename #{resource.node_name}"
       ]
 
       if action == :create
@@ -77,6 +82,59 @@ module Boundary
       cmd = Mixlib::ShellOut.new(command)
       cmd.run_command
       cmd.error!
+    end
+
+    def exists?(resource)
+      # If meter is running but is an unprovisioned state return false
+      ::File.exists?("#{resource.conf_dir}/meter.conf") and
+          provisioned?(resource)
+    end
+
+    def create(resource)
+      setup_conf_dir resource
+
+      Chef::Log.info("Creating meter [#{resource.name}]")
+
+      begin
+        run_command build_command resource, :create
+      rescue Exception => e
+        Chef::Log.error("Could not create meter [#{resource.name}], failed with #{e}")
+      end
+    end
+
+    def config_merged?(resource)
+
+      conf_file = "#{resource.conf_dir}/meter.conf"
+
+      if File.exist?(conf_file) && !File.zero?(conf_file)
+        old_config = JSON.load(::File.new("#{resource.conf_dir}/meter.conf"))
+        new_config = old_config.merge(node['boundary_meter']['meter_conf'])
+        if old_config.eql?(new_config)
+          Chef::Log.info("No new meter.conf settings detected ... skipping update.")
+          return false
+        else
+          Chef::Log.info("New meter.conf settings detected. Updating #{conf_file} ...")
+          File.open("#{resource.conf_dir}/meter.conf", 'w+') { |file| file.write(JSON.pretty_generate(new_config)) }
+          return true
+        end
+      else
+        Chef::Log.info("Old Config [#{conf_file}] does not exist!")
+        return false
+      end
+
+
+    end
+
+    def delete(resource)
+      remove_conf_dir resource
+
+      Chef::Log.info("Deleting meter [#{resource.name}]")
+
+      begin
+        run_command build_command resource, :delete
+      rescue Exception => e
+        Chef::Log.error("Could not delete meter [#{resource.name}], failed with #{e}")
+      end
     end
 
     # TODO rethink this. This should be handled elsewhere
@@ -126,4 +184,34 @@ module Boundary
       return tags.join(',')
     end
   end
+
+  class DataBag
+    attr_accessor :node
+
+    def initialize(node)
+      @node = node
+    end
+
+    def exists?(resource)
+      if Chef::DataBag.list.key?("#{resource.databag_name}")
+        Chef::Log.info("Databag [#{resource.databag_name}] found on Chef server.")
+        return true
+      else
+        Chef::Log.info("Databag [#{resource.databag_name}] not found on Chef server.")
+        return false
+      end
+    end
+
+    def merge(resource)
+      begin
+          data = Chef::DataBagItem.load("#{resource.databag_name}", "#{resource.databag_item}").raw_data
+          Chef::Log.info("Loaded DataBag #{resource.databag_name}")
+          data.delete('id')
+          Chef::Mixin::DeepMerge.deep_merge!(data, node.default)
+      rescue Exception => e
+        Chef::Log.error("Could not merge databag  [#{resource.databag_name}/#{resource.databag_item}], failed with #{e}")
+      end
+    end
+  end
+
 end

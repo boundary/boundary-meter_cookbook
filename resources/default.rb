@@ -18,15 +18,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-actions :create, :delete
+actions :create, :configure, :delete
 default_action :create if defined?(default_action)
 
 def initialize(*args)
   super
   @action = :create
 end
+
+# set_or_return is a magic function from Chef that does most of the heavy
+# lifting for attribute access.
+# For now all you need to know is that the method name should be given as
+# a symbol (like :cloud) and that you declare the type with :kind_of
 
 def conf_dir( arg=nil )
   if arg.nil? and @conf_dir.nil? and is_alt == true
