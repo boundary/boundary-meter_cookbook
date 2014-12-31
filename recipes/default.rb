@@ -21,6 +21,20 @@
 # limitations under the License.
 #
 
+databag = node['boundary_meter']['data_bag']
+
+boundary_meter_databag_merge "#{databag['name']}" do
+  databag_name databag['name']
+  databag_item databag['item']
+  action :merge
+  only_if {databag['merge'] }
+end
+
+# data_bag_merge  do
+#   data_bag node['boundary_meter']['data_bag']
+#   data_bag_item node['boundary_meter']['data_bag_item']
+# end
+
 include_recipe 'boundary-meter::dependencies'
 
 package 'boundary-meter' do
@@ -31,9 +45,13 @@ service 'boundary-meter'
 
 meter_name = node['boundary_meter']['hostname']
 
+# named attribute :name => is set to "default"
+# boundary_meter resource
+
 boundary_meter "default" do
   node_name meter_name
   token node['boundary_meter']['token']
+  action [ :create, :configure ]
   notifies :restart, "service[boundary-meter]"
 end
 
@@ -42,10 +60,10 @@ node['boundary_meter']['alt_configs'].each do |config|
     node_name meter_name
     token config['token']
     is_alt true
+    action [ :create, :configure ]
     notifies :restart, "service[boundary-meter]"
   end
 end
-
 template '/etc/default/boundary-meter' do
   source 'boundary-meter.default.erb'
   owner 'root'

@@ -1,7 +1,4 @@
 #
-# Author:: Joe Williams (<j@boundary.com>)
-# Author:: Scott Smith (<scott@boundary.com>)
-# Author:: Zachary Schneider (<schneider@boundary.com>)
 # Cookbook Name:: boundary-meter
 # Provider:: default
 #
@@ -21,39 +18,22 @@
 #
 
 
-action :create do
-  if meter.exists?(new_resource)
+action :merge do
+  if databag.exists?(new_resource)
     new_resource.updated_by_last_action(false)
   else
-    meter.create(new_resource)
+    databag.merge(new_resource)
     new_resource.updated_by_last_action(true)
-  end
-end
-
-action :configure do
-  if meter.exists?(new_resource)
-    if meter.config_merged?(new_resource)
-      new_resource.updated_by_last_action(true)
-    else
-      new_resource.updated_by_last_action(false)
-    end
-  end
-end
-
-action :delete do
-  if meter.exists?(new_resource)
-    meter.delete(new_resource)
-    new_resource.updated_by_last_action(true)
-  else
-    new_resource.updated_by_last_action(false)
   end
 end
 
 private
 
-# The meter object
+# The databag object
 
-def meter
-  @meter ||= Boundary::Meter.new(node)
+def databag
+  @databag ||= Boundary::DataBag.new(node)
 end
+
+
 

@@ -4,7 +4,7 @@ maintainer_email 'ops@boundary.com'
 license          'Apache 2.0'
 description      'Installs/Configures boundary-meter'
 long_description 'Installs/Configures boundary-meter'
-version          '3.0.0'
+version          '3.0.1'
 
 %w{ ubuntu debian rhel centos amazon scientific }.each do |os|
   supports os
