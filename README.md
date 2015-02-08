@@ -52,7 +52,7 @@ For Boundary Enterprise
 ```ruby
 node['boundary_meter']['alt_configs'] = [{
                                             'name' => 'secondary',
-                                            'org_id:api_key'
+                                            'token' => 'org_id:api_key'
                                           }
                                          ]
 ```
@@ -61,7 +61,7 @@ or Boundary Premium
 ```ruby
 node['boundary_meter']['alt_configs'] = [{
                                             'name' => 'secondary',
-                                            'api_token'
+                                            'token' => 'api_token'
                                           }
                                          ]
 ```
