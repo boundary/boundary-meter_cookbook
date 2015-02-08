@@ -55,5 +55,5 @@ default['boundary_meter']['enable_stun'] = 0
 default['boundary_meter']['api']['hostname'] = 'api.boundary.com'
 default['boundary_meter']['collector']['hostname'] = 'collector.boundary.com'
 default['boundary_meter']['collector']['port'] = 4740
-default['boundary_meter']['premium-api']['hostname'] = 'premium-api.boundary.com'
+default['boundary_meter']['premium_api']['hostname'] = 'premium-api.boundary.com'
 default['boundary_meter']['tls']['skip_validation'] = false

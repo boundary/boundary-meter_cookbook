@@ -54,7 +54,7 @@ module Boundary
       return false unless 
         premium_token == config['premium_api']['token'] and
         (enterprise_token == "#{config['enterprise_api']['org_id']}:#{config['enterprise_api']['api_key']}" or enterprise_token.empty?) and
-        boundary_data('premium-api')['hostname'] == config['premium_api']['host'] and
+        boundary_data('premium_api')['hostname'] == config['premium_api']['host'] and
         boundary_data('api')['hostname'] == config['enterprise_api']['host'] and
         "tls://#{boundary_data('collector')['hostname']}:#{boundary_data('collector')['port']}" == config['collector']['collectors'][0]
 
@@ -77,7 +77,7 @@ module Boundary
       command = [
         "boundary-meter -l #{action.to_s}",
         "-L https://#{boundary_data('api')['hostname']}",
-        "-P https://#{boundary_data('premium-api')['hostname']}",
+        "-P https://#{boundary_data('premium_api')['hostname']}",
         "-p #{resource.token}",
         "-b #{resource.conf_dir}",
         "-n tls://#{boundary_data('collector')['hostname']}:#{boundary_data('collector')['port']}",
