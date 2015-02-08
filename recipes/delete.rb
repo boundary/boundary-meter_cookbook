@@ -24,20 +24,14 @@ service 'boundary-meter' do
   action [ :stop, :disable ]
 end
 
-meter_name = node['boundary_meter']['hostname']
-
-node['boundary_meter']['alt_configs'].each do |config|
+boundary_data('alt_configs').each do |config|
   boundary_meter config['name'] do
-    node_name meter_name
-    token config['token']
     is_alt true
     action :delete
   end
 end
 
 boundary_meter "default" do
-  node_name meter_name
-  token node['boundary_meter']['token']
   action :delete
 end
 

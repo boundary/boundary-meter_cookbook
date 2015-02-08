@@ -44,8 +44,8 @@ private
 
 def meter_exists?(resource)
   # If meter is running but is an unprovisioned state return false
-  ::File.exists?("#{resource.conf_dir}/meter.conf") and
-	  meter_provisioned?(resource)
+  meter_config_current?(resource) and
+	meter_provisioned?(resource)
 end
 
 def create_meter(resource)

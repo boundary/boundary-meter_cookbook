@@ -1,24 +1,24 @@
-COLLECTOR=<%= @collector_uri %>
+COLLECTOR=tls://<%= @boundary_meter['collector']['hostname'] %>:<%= @boundary_meter['collector']['port'] %>
 
 # All non-loopback interfaces that have IP addresses and are up are monitored by default.
 # If you only want specific interfaces monitored, specify them here.
 # e.g. INTERFACES="eth0 eth1 eth3 eth4"
-INTERFACES="<%= @interfaces.join(' ') %>"
+INTERFACES="<%= @boundary_meter['interfaces'].join(' ') %>"
 
 # Enable periodic stats on pcap interfaces by setting this to 1
-PCAP_STATS=<%= @pcap_stats %>
+PCAP_STATS=<%= @boundary_meter['pcap_stats'] %>
 
 # Enable promiscuous capture mode (required to see some traffic, e.g. rx multicast)
-PCAP_PROMISC=<%= @pcap_promisc %>
+PCAP_PROMISC=<%= @boundary_meter['pcap_promisc'] %>
 
 # Disable built-in NTP support for meter time synchronization by setting this to 1
-DISABLE_NTP=<%= @disable_ntp %>
+DISABLE_NTP=<%= @boundary_meter['disable_ntp'] %>
 
 # Enable built-in STUN support for public IP detection by setting this to 1
-ENABLE_STUN=<%= @enable_stun %>
+ENABLE_STUN=<%= @boundary_meter['enable_stun'] %>
 
 # Enable secondary configurations for the meter by specifying a space-separated
 # list of configuration that exists under etc/boundary_*. For example:
 # ALT_CONFIGS="test" starts a secondary meter with the configuration
 # found under /etc/boundary_test
-ALT_CONFIGS="<%= @alt_configs.join(' ') %>"
+ALT_CONFIGS="<%= @boundary_meter['alt_configs'].collect{|cfg| cfg['name']}.join(' ') %>"

@@ -4,8 +4,7 @@
 # Cookbook Name:: boundary-meter
 # Attributes:: default
 #
-# Copyright 2011, Boundary
-# Copyright 2014, Boundary
+# Copyright 2015, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,9 +19,14 @@
 # limitations under the License.
 #
 
+# your boundary premium or enterprise token
 default['boundary_meter']['token'] = ''
+
 default['boundary_meter']['hostname'] = node['fqdn']
 default['boundary_meter']['tags'] = [node.chef_environment]
+
+# discover tags from various providers that publish node attributes
+default['boundary_meter']['discover_tags'] = true
 
 # install or upgrade
 # if you opt for upgrade you may notice small metric gaps
@@ -52,3 +56,4 @@ default['boundary_meter']['api']['hostname'] = 'api.boundary.com'
 default['boundary_meter']['collector']['hostname'] = 'collector.boundary.com'
 default['boundary_meter']['collector']['port'] = 4740
 default['boundary_meter']['premium-api']['hostname'] = 'premium-api.boundary.com'
+default['boundary_meter']['tls']['skip_validation'] = false

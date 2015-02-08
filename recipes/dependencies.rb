@@ -39,17 +39,17 @@ when 'rhel'
 
   yum_repository 'boundary' do
     description 'boundary'
-    baseurl "#{node['boundary_meter']['repositories']['yum']['url']}/#{version}/#{machine}/"
-    gpgkey node['boundary_meter']['repositories']['yum']['key']
+    baseurl "#{boundary_data('repositories')['yum']['url']}/#{version}/#{machine}/"
+    gpgkey boundary_data('repositories')['yum']['key']
     action :create
   end
 when 'debian', 'ubuntu'
   package 'apt-transport-https'
 
   apt_repository 'boundary' do
-    uri node['boundary_meter']['repositories']['apt']['url']
+    uri boundary_data('repositories')['apt']['url']
     distribution node['lsb']['codename']
     components ['universe']
-    key node['boundary_meter']['repositories']['apt']['key']
+    key boundary_data('repositories')['apt']['key']
   end
 end

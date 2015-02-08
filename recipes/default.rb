@@ -5,8 +5,7 @@
 # Cookbook Name:: boundary-meter
 # Recipe:: default
 #
-# Copyright 2010, Boundary
-# Copyright 2014, Boundary
+# Copyright 2015, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,22 +23,17 @@
 include_recipe 'boundary-meter::dependencies'
 
 package 'boundary-meter' do
-  action node['boundary_meter']['install_type'].to_sym
+  action boundary_data('install_type').to_sym
 end
 
 service 'boundary-meter'
 
-meter_name = node['boundary_meter']['hostname']
-
 boundary_meter "default" do
-  node_name meter_name
-  token node['boundary_meter']['token']
   notifies :restart, "service[boundary-meter]"
 end
 
-node['boundary_meter']['alt_configs'].each do |config|
+boundary_data('alt_configs').each do |config|
   boundary_meter config['name'] do
-    node_name meter_name
     token config['token']
     is_alt true
     notifies :restart, "service[boundary-meter]"
@@ -52,13 +46,5 @@ template '/etc/default/boundary-meter' do
   group 'root'
   mode '0644'
   notifies :restart, "service[boundary-meter]"
-  variables({
-              :collector_uri => "tls://#{node['boundary_meter']['collector']['hostname']}:#{node['boundary_meter']['collector']['port']}",
-              :interfaces => node['boundary_meter']['interfaces'],
-              :pcap_stats => node['boundary_meter']['pcap_stats'],
-              :pcap_promisc => node['boundary_meter']['pcap_promisc'],
-              :disable_ntp => node['boundary_meter']['disable_ntp'],
-              :enable_stun => node['boundary_meter']['enable_stun'],
-              :alt_configs => node['boundary_meter']['alt_configs'].collect {|cfg| cfg['name']}
-            })
+  variables :boundary_meter => boundary_data_merge
 end
