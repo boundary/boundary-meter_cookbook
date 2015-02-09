@@ -73,7 +73,3 @@ This cookbook includes automatic detection and tagging of your meter with variou
 #### OpsWorks
 
 If you are using OpsWorks this cookbook should work out of the box (with the above dependencies). This cookbook also includes automatic detection and tagging of your meter with layers, stack name and applications if any exist.
-
-#### Known issues
-
-- There is a meter bug that prevents status from being returned properly when using alt_configs functionality. If the meter needs to be reprovisioned chef will not detect this unless the meter.conf is deleted from alt_config directory.

@@ -26,7 +26,8 @@ module Boundary
     CONF_DIR = '/etc/boundary'
 
     def get_meter(resource)
-      cmd = Mixlib::ShellOut.new("boundary-meter --dump-meter-info -b #{Boundary::Meter::CONF_DIR}")
+      meter_name = (resource.is_alt) ? 'boundary-meter' : "boundary-meter_#{resource.name}"
+      cmd = Mixlib::ShellOut.new("boundary-meter --dump-meter-info -I #{meter_name}")
       cmd.run_command
       raise Exception.new("boundary meter status failed") if cmd.error?
       json = JSON.parse(cmd.stdout)
