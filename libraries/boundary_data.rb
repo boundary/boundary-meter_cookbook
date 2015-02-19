@@ -31,7 +31,9 @@ class Chef
 
     def boundary_data_merge(namespace='boundary_meter')
       databag, item = namespace.split('_')
+      
       return node[namespace] unless data_bag(databag).include?(item)
+      
       node[namespace].merge(data_bag_item(databag, item).to_hash)
     end
 
@@ -40,8 +42,10 @@ class Chef
     def from_data_bag(value, namespace)
       databag, item = namespace.split('_')
       
-      if data_bag(databag).include?(item)
-        return data_bag_item(databag, item)[value]
+      if Chef::DataBag.list.include?(databag)
+        if data_bag(databag).include?(item)
+          return data_bag_item(databag, item)[value]
+        end
       end
 
       nil
