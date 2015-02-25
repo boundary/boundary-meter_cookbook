@@ -44,7 +44,10 @@ when 'rhel'
     action :create
   end
 when 'debian', 'ubuntu'
-  package 'apt-transport-https'
+  package 'apt-transport-https-meter-dep' do
+    package_name 'apt-transport-https'
+    action :upgrade
+  end
 
   apt_repository 'boundary' do
     uri boundary_data('repositories')['apt']['url']
