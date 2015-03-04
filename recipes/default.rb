@@ -26,10 +26,13 @@ package 'boundary-meter' do
   action boundary_data('install_type').to_sym
 end
 
-service 'boundary-meter'
+service 'boundary-meter' do
+  ignore_failure true
+end
 
 boundary_meter "default" do
   notifies :restart, "service[boundary-meter]"
+  ignore_failure true
 end
 
 boundary_data('alt_configs').each do |config|
@@ -37,6 +40,7 @@ boundary_data('alt_configs').each do |config|
     token config['token']
     is_alt true
     notifies :restart, "service[boundary-meter]"
+    ignore_failure true
   end
 end
 
