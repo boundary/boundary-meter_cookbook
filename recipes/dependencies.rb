@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-case node['platform_family']
+case family = node['platform_family']
 when 'rhel'
   case node['kernel']['machine']
   # There are no i686 meter builds
@@ -49,10 +49,15 @@ when 'debian', 'ubuntu'
     action :upgrade
   end
 
+  components = {
+    'debian' => 'main',
+    'ubuntu' => 'universe'
+  }
+
   apt_repository 'boundary' do
-    uri boundary_data('repositories')['apt']['url']
+    uri boundary_data('repositories')['apt']['url'] % { distribution: family }
     distribution node['lsb']['codename']
-    components ['universe']
+    components Array(components[family])
     key boundary_data('repositories')['apt']['key']
   end
 end

@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-default['boundary_meter']['repositories']['apt']['url'] = 'http://apt.boundary.com/ubuntu/'
+default['boundary_meter']['repositories']['apt']['url'] = 'http://apt.boundary.com/%{distribution}/'
 default['boundary_meter']['repositories']['apt']['key'] = 'http://apt.boundary.com/APT-GPG-KEY-Boundary'
 
 default['boundary_meter']['repositories']['yum']['url'] = 'http://yum.boundary.com/centos/os'
