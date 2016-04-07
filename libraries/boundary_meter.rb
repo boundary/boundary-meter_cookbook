@@ -50,7 +50,7 @@ module Boundary
       raise Exception.new("invalid number of tokens specified") if tokens.size > 2
 
       enterprise_token = tokens.select{|tok| tok.include?(':')}.first.to_s
-      premium_token = tokens.select{|tok| tok.include?('api.')}.first.to_s
+      premium_token = tokens.select{|tok| tok.include?('api.') || tok.include?('-')}.first.to_s
 
       return false unless 
         premium_token == config['premium_api']['token'] and
