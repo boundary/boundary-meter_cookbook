@@ -2,7 +2,7 @@
 # Author:: Joe Williams (<j@boundary.com>)
 # Author:: Scott Smith (<scott@boundary.com>)
 # Cookbook Name:: boundary-meter
-# Recipe:: delete
+# Recipe:: delete_config
 #
 # Copyright 2011, Boundary
 # Copyright 2014, Boundary
@@ -20,8 +20,17 @@
 # limitations under the License.
 #
 
-include_recipe 'boundary-meter::delete_config'
+service 'boundary-meter' do
+  action [ :stop, :disable ]
+end
 
-package 'boundary-meter' do
-  action :purge
+boundary_data('alt_configs').each do |config|
+  boundary_meter config['name'] do
+    is_alt true
+    action :delete
+  end
+end
+
+boundary_meter "default" do
+  action :delete
 end
